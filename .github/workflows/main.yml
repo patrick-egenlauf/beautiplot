@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Set up the environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Run checks
+        run: |
+          uv lock --locked
+          uv run pre-commit run -a
+          uv run mypy
+          uv run deptry src
+
+  tests-and-type-check:
+    runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest-doc-src
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+      fail-fast: false
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Install node
+        run: |
+          curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
+          bash nodesource_setup.sh
+          apt install -y nodejs
+
+      - name: Set up the environment
+        uses: ./.github/actions/setup-python-env
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run tests
+        run: uv run python -m pytest tests
+
+      - name: Upload generated PNG (only on Python 3.11)
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-plot
+          path: docs/example_plots/damped_oscillation.png
+
+      - name: Check typing
+        run: uv run mypy
+
+
+
+  check-docs:
+    runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest-doc-src
+    needs: [tests-and-type-check]
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Install node
+        run: |
+          curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
+          bash nodesource_setup.sh
+          apt install -y nodejs
+
+      - name: Set up the environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Run examples
+        run: |
+          set -e
+          for script in examples/*.py; do
+            echo "Running $script"
+            uv run python "$script"
+          done
+          OUTDIR="docs/example_plots"
+          echo "outdir=$OUTDIR" >> "$GITHUB_ENV"
+
+      - name: Download generated test plot
+        uses: actions/download-artifact@v4
+        with:
+          name: test-plot
+          path: ${{ env.outdir }}
+
+      - name: Check if documentation can be built
+        run: uv run mkdocs build -s

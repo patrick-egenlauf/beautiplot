@@ -1,0 +1,31 @@
+from pathlib import Path
+
+import numpy as np
+
+import beautiplot.plot as bp
+from beautiplot import config
+
+root = Path(__file__).parent.parent
+config.output_path = root / 'docs/example_plots'
+
+x = np.linspace(-np.pi, np.pi, 100)
+
+fig, axes = bp.newfig(nrows=2, ncols=2, left=30, bottom=20)
+positions = [('left', 0.0, 1.0, 'top', 1.0, -1.0),
+            ('right', 1.0, -1.0, 'top', 1.0, -1.0),
+            ('right', 0.0, -14.0, 'top', 1.0, -1.0),
+            ('right', 0.6, 0.0, 'bottom', 0.4, 1.0)]
+for i in range(4):
+    ax = axes[i // 2, i % 2]
+    bp.subfig_label(ax, i, *positions[i])
+    ax.plot(x, np.sin(x), label=f'Subplot {i}')
+    ax.set_yticks([-1, 0, 1])
+    ax.legend()
+
+for i in range(2):
+    axes[0, i].sharex(axes[1, i])
+    axes[0, i].tick_params('x', labelbottom=False)
+    axes[i, 1].sharey(axes[i, 0])
+    axes[i, 1].tick_params('y', labelleft=False)
+
+bp.save_figure(fig, 'label_subfigs.png')

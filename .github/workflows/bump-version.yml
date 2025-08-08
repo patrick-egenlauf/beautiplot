@@ -1,0 +1,35 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "New version (e.g. 1.2.3)"
+        required: true
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up the environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Bump version
+        run: |
+          uv version ${{ github.event.inputs.version }}
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: bump version to v${{ github.event.inputs.version }}"
+          title: "chore: bump version to v${{ github.event.inputs.version }}"
+          body: |
+            This PR bumps the version to v${{ github.event.inputs.version }} and prepares for release.
+          branch: release-v${{ github.event.inputs.version }}
+          base: main

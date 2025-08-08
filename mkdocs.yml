@@ -1,0 +1,107 @@
+site_name: BeautyPlot Docs
+repo_url: https://github.com/patrick-egenlauf/beautiplot
+repo_name: patrick-egenlauf/beautiplot
+edit_uri: ''
+site_author: Patrick Egenlauf
+copyright: Copyright &copy; 2025 Patrick Egenlauf
+
+nav:
+  - Home: index.md
+  - Getting Started: getting_started.md
+  - Tutorials: tutorials/
+  - API Reference: reference/
+
+
+theme:
+  name: material
+  icon:
+    repo: material/github
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - header.autohide
+    - code-folding
+    - code-highlighting
+    - content.action.edit
+  palette:
+
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+plugins:
+  - search
+  - markdown-exec
+  - section-index
+  - gen-files:
+      scripts:
+      - scripts/gen_ref_pages.py
+      - scripts/gen_tutorials.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src/beautiplot]
+          options:
+            docstring_style: google
+            docstring_section_style: list
+            heading_level: 2
+            inherited_members: true
+            merge_init_into_class: true
+            separate_signature: true
+            show_bases: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_root_full_path: true
+            show_root_heading: true
+            show_root_toc_entry: false
+            show_root_members_full_path: false
+            show_signature_annotations: true
+            signature_crossrefs: true
+            relative_crossrefs: true
+            members_order: source
+            summary: false
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - toc:
+      permalink: '#'
+  - pymdownx.betterem
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      use_pygments: true
+      pygments_lang_class: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      check_paths: true
+      base_path: [examples, "."]

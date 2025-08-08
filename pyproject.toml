@@ -1,0 +1,140 @@
+[project]
+name = "beautiplot"
+version = "1.0.0"
+description = "This package provides a set of functions to create beautiful plots with Matplotlib."
+authors = [{ name = "Patrick Egenlauf", email = "patrick.egenlauf@simtech.uni-stuttgart.de" }]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "matplotlib>=3.10.5",
+    "numpy>=2.1.2",
+]
+
+[project.urls]
+Homepage = "https://patrick-egenlauf.github.io/beautiplot/"
+Repository = "https://github.com/patrick-egenlauf/beautiplot"
+Documentation = "https://patrick-egenlauf.github.io/beautiplot/"
+
+
+[dependency-groups]
+test = [
+    "coverage>=7.6.12",
+    "pre-commit>=4.1.0",
+    "pytest>=8.3.4",
+    "tox-uv>=1.25.0",
+    "deptry>=0.23.0",
+    "mypy>=1.15.0",
+    {include-group = "formatting"},
+]
+docs = [
+    "mkdocs-material>=9.6.5",
+    "mkdocs>=1.6.1",
+    "mkdocstrings[python]>=0.28.2",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.1",
+    "mkdocs-section-index>=0.3.9",
+    {include-group = "formatting"},
+    "markdown-exec[ansi]>=1.11.0",
+    "scipy>=1.15.3",
+]
+formatting = [
+    "ruff>=0.9.9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+managed = true
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/beautiplot"]
+
+[tool.mypy]
+files = ["src"]
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+exclude = ["^docs/.*", "^examples/.*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+fix = true
+
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    # "TRY",
+    # pydocstyle
+    "D",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+"tests/*.py" = ["D"]  # Ignore docstring style in tests
+"docs/*.py" = ["D"]  # Ignore docstring style in docs
+"docs/*.ipynb" = ["D"]  # Ignore docstring style in docs
+"examples/*.py" = ["D", "W505"]  # Ignore docstring style in examples
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"  # Ensures compliance with PEP 257
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 100  # Max line length for code
+max-doc-length = 72  # Max line length for docstrings
+
+[tool.ruff.lint.isort]
+relative-imports-order = "closest-to-furthest"
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+preview = true
