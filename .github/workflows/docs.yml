@@ -11,6 +11,8 @@ on:
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     container:
       image: texlive/texlive:latest-doc-src
     steps:
