@@ -1,0 +1,42 @@
+name: Deploy Docs
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (branch, tag, or SHA) to deploy from"
+        default: "main"
+        required: true
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest-doc-src
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Install node
+        run: |
+          curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
+          bash nodesource_setup.sh
+          apt install -y nodejs
+
+      - name: Set up the environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Run examples
+        run: |
+          set -e
+          for script in examples/*.py; do
+            echo "Running $script"
+            uv run python "$script"
+          done
+          uv run python -m pytest tests
+
+      - name: Fix Git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Deploy documentation
+        run: uv run mkdocs gh-deploy --force
