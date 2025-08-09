@@ -17,28 +17,6 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 
-# import color as _color
-# import data as _data
-# import paths as _paths
-
-
-# PT = 1 / 72.27
-# BP = 1 / 72
-# TEXT_WIDTH = 426.79135 * PT #beamer presentation 398.3386 * PT
-# textwidth for master's thesis
-# 448.1309 * PT (textheight: 633.78513pt) #poster (953.2726 / 3) * PT
-# 246.0 * PT two column paper
-# CBAR_WIDTH = 10 * BP
-# DEFAULT_DPI = 300
-# REGIONS_CMAP = mcolors.ListedColormap((
-#     'lightblue', 'lightgreen', 'green', 'blue',
-# ), 'rr')
-# REGIONS_CMAP = mcolors.ListedColormap((
-#     'jr:light_blue', 'jr:light_green', 'jr:green', 'jr:blue',
-# ), 'jr:rr')
-# REGIONS_LABELS = (r'\RR{R}{R}', r'\RR{P}{R}', r'\RR{R}{P}',
-# r'\RR{P}{P}')
-# REGIONS_TICKS = tuple(range(len(REGIONS_LABELS)))
 PREAMBLE = r"""
 \usepackage{amsmath}
 \usepackage{amssymb}
