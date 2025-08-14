@@ -6,7 +6,7 @@
 
 **Beautiful, Consistent, and Reproducible Scientific Plots with Python.**
 
-Beautiplot is a Python library for beautiful, consistent, and publication-ready scientific plots. Built on Matplotlib, it offers high-level functions, reproducible styles, and easy customization — perfect for researchers, students, and engineers.
+Beautiplot is a Python library for beautiful, consistent, and publication-ready scientific plots. Built on [Matplotlib](https://matplotlib.org/stable/), it offers high-level functions, reproducible styles, and easy customization — perfect for researchers, students, and engineers.
 
 ## Features
 
