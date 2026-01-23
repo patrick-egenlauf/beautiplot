@@ -5,7 +5,7 @@
 # various parameters such as output paths, font sizes, and other
 # settings that will be applied to all plots created with beautiplot.
 # All configuration options are documented with examples in the
-# [`config`][beautiplot._config._Config] class. Here, we will
+# [`config`](../reference/beautiplot/_config/config.md) class. Here, we will
 # summarize the most important options and how to use them.
 #
 # ## Global Configuration
@@ -18,11 +18,10 @@ from beautiplot import config
 # The `config` object is an instance of the `_Config` class, which
 # allows you to set global configuration options.
 #
-# !!! warning
+# !!! note
 #
-#     You should never import and instantiate the `_Config` class
-#     directly, but always use the `config` object provided by the
-#     `beautiplot` module.
+#     The configuration object is not intended to be instantiated directly.
+#     Please use the global instance `beautiplot.config` to modify settings.
 #
 # The [`output_path`][beautiplot._config._Config.output_path] option
 # specifies the directory where the plots will be saved. You can set it
