@@ -49,7 +49,7 @@ from beautiplot import config
 config.width = 426.79135
 ```
 
-Next, we generate some data -- a damped oscillation in this case.
+Next, we generate some data - a damped oscillation in this case.
 
 ``` { .python .copy }
 t = np.linspace(0, 10, 1000)

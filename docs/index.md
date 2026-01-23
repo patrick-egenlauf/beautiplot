@@ -19,8 +19,8 @@
 - **Easy to Use:** High-level functions for common tasks (subplots, color bars, labels, etc.).
 - **Publication-Ready:** Figures are sized and formatted for scientific publishing.
 - **Reproducible:** Centralized configuration ensures all your figures look the same, every time.
-- **Customizable:** Start with beautiful defaults, but easily adjust every aspect of your plots — fonts, colors, sizes, and more — to match your preferences or publication requirements.
-- **Extensible:** Built on Matplotlib — use all its power, but with better defaults.
+- **Customizable:** Start with beautiful defaults, but easily adjust every aspect of your plots - fonts, colors, sizes, and more - to match your preferences or publication requirements.
+- **Extensible:** Built on Matplotlib - use all its power, but with better defaults.
 
 ## What’s Next?
 
@@ -28,4 +28,4 @@
 - **[Tutorials](tutorials/index.md):** Step-by-step guides for common tasks.
 - **[API Reference](reference/beautiplot/index.md):** Detailed documentation for all functions.
 
-**Make your science beautiful, reproducible, and effortless—with beautiplot!**
+**Make your science beautiful, reproducible, and effortless - with beautiplot!**
