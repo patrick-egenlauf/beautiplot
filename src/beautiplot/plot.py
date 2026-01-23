@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: MIT
 """Plotting utilities."""
 
+import math
+
 import matplotlib
 import matplotlib.axes
 
@@ -51,20 +53,22 @@ def newfig(
     nrows: int = 1,
     ncols: int = 1,
     gridspec: bool = False,
-    left: float = 1,
-    right: float = 1,
-    top: float = 1,
-    bottom: float = 1,
-    wspace: float = 6,
-    hspace: float = 6,
+    left: float = config.margin_threshold,
+    right: float = config.margin_threshold,
+    top: float = config.margin_threshold,
+    bottom: float = config.margin_threshold,
+    wspace: float = config.spacing_threshold,
+    hspace: float = config.spacing_threshold,
     **kwargs: Any,
 ) -> tuple[mfigure.Figure, Any]:
     """Create a new figure with some default options.
 
-    This function creates a new figure. At first, you need to estimate
-    the margins, but you can adjust them later as needed. If you do not
-    specify any margins, the figure will be trimmed to the axes, and
-    tick labels or axis labels won't be visible.
+    This function creates a new figure. You can specify margins (in bp)
+    using `left`, `right`, `top`, and `bottom`. If you don't know the
+    exact values, you can start with a guess. When you save the figure
+    using [`save_figure`][beautiplot.plot.save_figure], `beautiplot`
+    will analyze the layout and suggest adjustments if content is cut
+    off or overlapping.
 
     Args:
         width: The width of the figure in textwidths. The given width is
@@ -121,8 +125,177 @@ def newfig(
     return fig, axes_or_gs
 
 
+def _get_x_limits(
+    ax: matplotlib.axes.Axes, renderer: Any
+) -> tuple[float, float] | None:
+    bbox = ax.get_tightbbox(renderer)
+    if bbox is None:
+        return None
+    x0, x1 = bbox.x0, bbox.x1
+    return x0, x1
+
+
+def _get_y_limits(
+    ax: matplotlib.axes.Axes, renderer: Any
+) -> tuple[float, float] | None:
+    bbox = ax.get_tightbbox(renderer)
+    if bbox is None:
+        return None
+    y0, y1 = bbox.y0, bbox.y1
+    return y0, y1
+
+
+def _check_wspace(grid: dict, rows: set, cols: set, renderer: Any) -> float | None:
+    max_w_overlap = -float('inf')
+    found = False
+    for r in rows:
+        for c in sorted(cols):
+            if (r, c) not in grid or (r, c + 1) not in grid:
+                continue
+            ax1 = grid[(r, c)]
+            ax2 = grid[(r, c + 1)]
+
+            lims1 = _get_x_limits(ax1, renderer)
+            lims2 = _get_x_limits(ax2, renderer)
+
+            if lims1 and lims2:
+                overlap = lims1[1] - lims2[0]
+                if overlap > max_w_overlap:
+                    max_w_overlap = overlap
+                found = True
+    return max_w_overlap if found else None
+
+
+def _check_hspace(grid: dict, rows: set, cols: set, renderer: Any) -> float | None:
+    max_h_overlap = -float('inf')
+    found = False
+    for c in cols:
+        for r in sorted(rows):
+            if (r, c) not in grid or (r + 1, c) not in grid:
+                continue
+            ax1 = grid[(r, c)]
+            ax2 = grid[(r + 1, c)]
+
+            lims1 = _get_y_limits(ax1, renderer)
+            lims2 = _get_y_limits(ax2, renderer)
+
+            if lims1 and lims2:
+                overlap = lims2[1] - lims1[0]
+                if overlap > max_h_overlap:
+                    max_h_overlap = overlap
+                found = True
+    return max_h_overlap if found else None
+
+
+def _suggest_spacing(fig: mfigure.Figure, renderer: Any, inch_to_bp: float) -> None:
+    axes = [ax for ax in fig.axes if ax.get_subplotspec() is not None]
+    if len(axes) <= 1:
+        return
+
+    grid = {}
+    for ax in axes:
+        ss = ax.get_subplotspec()
+        if ss is not None:
+            grid[(ss.rowspan.start, ss.colspan.start)] = ax
+
+    rows = {r for r, c in grid}
+    cols = {c for r, c in grid}
+
+    max_w_overlap = _check_wspace(grid, rows, cols, renderer)
+    max_h_overlap = _check_hspace(grid, rows, cols, renderer)
+
+    scale = inch_to_bp / fig.dpi
+    tolerance = 1e-2
+
+    if max_w_overlap is not None:
+        w_adj = math.ceil(max_w_overlap * scale + config.spacing_threshold - tolerance)
+        if abs(w_adj) > 0.5 and w_adj != 0:
+            log(f'Suggestion: Adjust wspace: {w_adj:+.0f}')
+
+    if max_h_overlap is not None:
+        h_adj = math.ceil(max_h_overlap * scale + config.spacing_threshold - tolerance)
+        if abs(h_adj) > 0.5 and h_adj != 0:
+            log(f'Suggestion: Adjust hspace: {h_adj:+.0f}')
+
+
+def _check_suptitle_overlap(fig: mfigure.Figure, renderer: Any, d_top: float) -> float:
+    """Check if suptitle overlaps with subplots."""
+    suptitle = getattr(fig, '_suptitle', None)
+    if not (suptitle and suptitle.get_visible()):
+        return d_top
+
+    sup_bbox = suptitle.get_window_extent(renderer)
+    max_overlap_bp = -float('inf')
+    found_subplot = False
+
+    for ax in fig.axes:
+        if not ax.get_visible():
+            continue
+        ax_bbox = ax.get_tightbbox(renderer)
+
+        if ax_bbox:
+            found_subplot = True
+            # ax_bbox from get_tightbbox is in pixels if used with
+            # renderer
+            overlap_pixels = ax_bbox.y1 - sup_bbox.y0
+            current_overlap_bp = overlap_pixels / fig.dpi * 72.0
+            if current_overlap_bp > max_overlap_bp:
+                max_overlap_bp = current_overlap_bp
+
+    if found_subplot:
+        spacing_suggestion = max_overlap_bp + config.spacing_threshold
+        d_top = spacing_suggestion
+
+    return d_top
+
+
+def _suggest_margins(fig: mfigure.Figure) -> None:
+    """Check for margin and spacing issues and suggest adjustments."""
+    try:
+        if hasattr(fig.canvas, 'get_renderer'):
+            renderer = fig.canvas.get_renderer()
+        else:
+            fig.canvas.draw()
+            renderer = fig.canvas.get_renderer()  # type: ignore[attr-defined]
+    except Exception:
+        return
+
+    bbox = fig.get_tightbbox(renderer)
+    if bbox is None:
+        return
+
+    width, height = fig.get_size_inches()
+    inch_to_bp = 72.0
+
+    d_left = -bbox.x0 * inch_to_bp + config.margin_threshold
+    d_bottom = -bbox.y0 * inch_to_bp + config.margin_threshold
+    d_right = (bbox.x1 - width) * inch_to_bp + config.margin_threshold
+    d_top = (bbox.y1 - height) * inch_to_bp + config.margin_threshold
+
+    d_top = _check_suptitle_overlap(fig, renderer, d_top)
+
+    suggestions = []
+    for name, val in [
+        ('left', d_left),
+        ('right', d_right),
+        ('top', d_top),
+        ('bottom', d_bottom),
+    ]:
+        val_rounded = math.ceil(val)
+        if abs(val) > 0.5 and val_rounded != 0:
+            suggestions.append(f'{name}: {val_rounded:+.0f}')
+
+    if suggestions:
+        log(f'Suggestion: Adjust margins: {", ".join(suggestions)}')
+
+    _suggest_spacing(fig, renderer, inch_to_bp)
+
+
 def save_figure(
-    fig: mfigure.Figure, file_path: str = 'plot.pdf', close: bool = True
+    fig: mfigure.Figure,
+    file_path: str = 'plot.pdf',
+    close: bool = True,
+    silent: bool = False,
 ) -> None:
     """Save the figure to a file.
 
@@ -133,18 +306,40 @@ def save_figure(
     figures, you should use `pdf` as the file format. In case of really
     large figures, you can still use `png` to save memory.
 
+    This function also checks for layout issues (e.g. cut-off labels or
+    overlapping subplots) and prints suggestions for adjusting margins
+    and spacing to the terminal.
+
+    Note:
+        This function requires that the figure was created using
+        [`newfig`][beautiplot.plot.newfig] to provide accurate margin
+        and spacing suggestions.
+
+    Note:
+        Unlike [`tight_layout`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html),
+        this function does not automatically adjust margins, as doing so
+        while preserving axes dimensions would alter the figure size
+        and effectively change the font size relative to the document.
+        Instead, it provides specific suggestions for manual adjustment
+        to ensure the figure maintains its exact intended dimensions.
+
     Args:
         fig: The figure to save.
         file_path: The path to save the figure to.
         close: Whether to close the figure after saving.
+        silent: Whether to suppress log messages. This does affect
+            suggestions for margin and spacing adjustments as well.
     """
     file_ext = Path(file_path).suffix.upper().lstrip('.')
-    log(f'Writing figure to {file_ext}...')
+    if not silent:
+        log(f'Writing figure to {file_ext}...')
 
     path = Path(config.output_path) / Path(file_path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
     fig.savefig(str(path))
+    if not silent:
+        _suggest_margins(fig)
     if close:
         plt.close(fig)
 
