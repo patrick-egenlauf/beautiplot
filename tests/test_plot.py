@@ -112,6 +112,7 @@ def test_save_figure_default_path() -> None:
         patch.object(plt.Figure, 'savefig') as mock_savefig,
         patch('matplotlib.pyplot.close') as mock_close,
         patch('sys.stdout', new=io.StringIO()) as mock_log,
+        patch('beautiplot.plot._suggest_margins'),  # Mock suggestions
     ):
         bp.save_figure(fig)
         mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
@@ -129,6 +130,7 @@ def test_save_figure_custom_path() -> None:
         patch.object(plt.Figure, 'savefig') as mock_savefig,
         patch('matplotlib.pyplot.close') as mock_close,
         patch('sys.stdout', new=io.StringIO()) as mock_log,
+        patch('beautiplot.plot._suggest_margins'),  # Mock suggestions
     ):
         bp.save_figure(fig, file_path=custom_path)
         mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
@@ -145,6 +147,7 @@ def test_save_figure_no_close() -> None:
         patch.object(plt.Figure, 'savefig') as mock_savefig,
         patch('matplotlib.pyplot.close') as mock_close,
         patch('sys.stdout', new=io.StringIO()) as mock_log,
+        patch('beautiplot.plot._suggest_margins'),  # Mock suggestions
     ):
         bp.save_figure(fig, close=False)
         mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
