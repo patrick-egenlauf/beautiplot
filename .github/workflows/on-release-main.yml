@@ -28,6 +28,8 @@ jobs:
   deploy-docs:
     needs: publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     container:
       image: texlive/texlive:latest-doc-src
     steps:
@@ -51,6 +53,9 @@ jobs:
             uv run python "$script"
           done
           uv run python -m pytest tests
+
+      - name: Fix Git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Deploy documentation
         run: uv run mkdocs gh-deploy --force
