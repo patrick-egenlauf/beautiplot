@@ -54,7 +54,9 @@ for path in sorted(src.rglob('*.py')):
         if parts[-1] == '_config':
             title = 'Configuration'
             fd.write(f'# {title}\n')
-            fd.write(f'::: {ident}\n    options:\n      members: no\n      show_root_heading: false')
+            fd.write(
+                f'::: {ident}\n    options:\n      members: no\n      show_root_heading: false'
+            )
         else:
             fd.write(f'# ::: {ident}\n    options:\n      members: no')
 
@@ -73,12 +75,16 @@ for path in sorted(src.rglob('*.py')):
             # ones except _Config
             if name.startswith('_') and name != '_Config':
                 continue
-            obj_doc_path = doc_dir / 'config.md' if name == '_Config' else doc_dir / f'{name}.md'
+            obj_doc_path = (
+                doc_dir / 'config.md' if name == '_Config' else doc_dir / f'{name}.md'
+            )
             with mkdocs_gen_files.open(obj_doc_path, 'w') as fd:
                 if name == '_Config':
                     display_name = 'Configuration Object'
                     fd.write(f'# {display_name}\n\n')
-                    fd.write(f'::: {identifier}\n    options:\n      show_root_heading: false\n')
+                    fd.write(
+                        f'::: {identifier}\n    options:\n      show_root_heading: false\n'
+                    )
                 else:
                     fd.write(f'# `{identifier}`\n\n')
                     fd.write(f'::: {identifier}\n')
@@ -86,7 +92,9 @@ for path in sorted(src.rglob('*.py')):
 
             # Add function/class to nav
             nav_name = 'Configuration Object' if name == '_Config' else name
-            nav[(*nav_parts, nav_name)] = obj_doc_path.relative_to('reference').as_posix()
+            nav[(*nav_parts, nav_name)] = obj_doc_path.relative_to(
+                'reference'
+            ).as_posix()
 
 with mkdocs_gen_files.open('reference/SUMMARY.md', 'w') as nav_file:
     nav_file.writelines(nav.build_literate_nav())
