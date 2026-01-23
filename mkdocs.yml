@@ -1,9 +1,9 @@
-site_name: BeautyPlot Docs
+site_name: Beautiplot Docs
 repo_url: https://github.com/patrick-egenlauf/beautiplot
 repo_name: patrick-egenlauf/beautiplot
 edit_uri: ''
 site_author: Patrick Egenlauf
-copyright: Copyright &copy; 2025 Patrick Egenlauf
+copyright: Copyright &copy; 2025 - 2026 Patrick Egenlauf
 
 nav:
   - Home: index.md
