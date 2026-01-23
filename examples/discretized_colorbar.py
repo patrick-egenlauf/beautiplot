@@ -51,11 +51,16 @@ ext = bp.extent(data_dict)
 
 # Then, we create a new figure and axis using the
 # [`newfig`][beautiplot.plot.newfig] function. At first, we need to
-# estimate the margins, but we can adjust them later if needed. We
-# plot the regions using the [`imshow`][beautiplot.plot.imshow]
+# estimate the margins, but we can adjust them later if needed.
+#
+# `beautiplot` will suggest margin adjustments when saving the figure.
+# Keep in mind that these adjustments might affect tick labels, so
+# fixing tick locations can help avoid a cycle of suggestions.
+#
+# We plot the regions using the [`imshow`][beautiplot.plot.imshow]
 # function, which displays the regions with the discretized colormap.
 
-fig, ax = bp.newfig(left=42, bottom=28, top=46)
+fig, ax = bp.newfig(left=45, bottom=32, top=46)
 im = bp.imshow(ax, regions, extent=ext, cmap=cmap, vmin=vmin, vmax=vmax)
 
 # We also add markers for the attractors using the

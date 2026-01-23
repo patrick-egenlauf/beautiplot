@@ -50,9 +50,14 @@ def psi_2d(nx, ny, X, Y):
 # To start plotting, we create a new figure with a grid of subplots. In
 # the beginning, you need to guess the margins and spacing, but you can
 # adjust them later if needed.
+#
+# When saving, `beautiplot` will suggest adjustments for margins and
+# spacing (wspace/hspace) if overlaps or cut-offs are detected. Be aware
+# that these adjustments can influence tick generation, so fixing ticks
+# might be necessary for a stable layout.
 
 fig, axes = bp.newfig(
-    nrows=2, ncols=2, left=38, bottom=34, top=38, right=63, wspace=18, hspace=25
+    nrows=2, ncols=2, left=39, bottom=33, top=38, right=62, wspace=26, hspace=26
 )
 
 # We want to label each subplot with a subfigure label. The `label

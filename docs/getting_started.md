@@ -47,7 +47,7 @@ t = np.linspace(0, 10, 1000)
 y = 5 * np.exp(-t / 2) * np.cos(2 * np.pi * t)
 ```
 
-Now, we create our first figure using the [`newfig`][beautiplot.plot.newfig] function. At first, you need to estimate the margins, but you can adjust them later as needed. If you do not specify any margins, the figure will be trimmed to the axes, and tick labels or axis labels won't be visible.
+Now, we create our first figure using the [`newfig`][beautiplot.plot.newfig] function. You can specify margins (in bp) using `left`, `right`, `top`, and `bottom`. If you don't know the exact values, you can start with a guess. When you save the figure, `beautiplot` will analyze the layout and suggest adjustments if content is cut off.
 
 ``` { .python .copy }
 fig, ax = bp.newfig(left=40, bottom=35)
@@ -67,6 +67,13 @@ Finally, we save the figure. Since `pgf` is used as a backend, you cannot use `p
 ``` { .python .copy }
 bp.save_figure(fig, 'damped_oscillation.png')
 ```
+
+If any labels or ticks are cut off, `beautiplot` will print suggestions in the terminal to adjust the margins or spacing, for example:
+`Suggestion: Adjust margins: left: +5, bottom: +2`
+
+!!! note "Iterative Adjustments"
+
+    Sometimes, adjusting the margins changes the available space for the plot, which might cause Matplotlib to change the tick labels (e.g., reducing the number of ticks or changing their format). This can lead to a new suggestion in the next run. If you find yourself in a loop of suggestions, consider fixing the tick locations or labels manually to stabilize the layout.
 
 ![damped_oscillation.png](example_plots/damped_oscillation.png)
 

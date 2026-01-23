@@ -35,8 +35,12 @@ x = np.sin(y)
 # We then create a new figure with the specified margins. In the
 # beginning, you need to guess the margins and spacing, but you can
 # adjust them later if needed.
+#
+# `beautiplot` will suggest margin adjustments when saving the figure.
+# Keep in mind that these adjustments might affect tick labels, so
+# fixing tick locations can help avoid a cycle of suggestions.
 
-fig, ax = bp.newfig(left=34, bottom=20, top=5)
+fig, ax = bp.newfig(left=31, bottom=18, top=5)
 
 # Next, we plot the data. We set the y-limits to ensure that the plot
 # has a range of -2 to 2, which is important for the aspect ratio

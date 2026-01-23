@@ -33,8 +33,12 @@ y4 = 4 * np.cos(x)
 # [`newfig`][beautiplot.plot.newfig] function. In the beginning, you
 # need to guess the margins and spacing, but you can adjust them later
 # if needed.
+#
+# `beautiplot` will suggest margin adjustments when saving the figure.
+# Keep in mind that these adjustments might affect tick labels, so
+# fixing tick locations can help avoid a cycle of suggestions.
 
-fig, axes = bp.newfig(nrows=2, ncols=2, left=26, bottom=20)
+fig, axes = bp.newfig(nrows=2, ncols=2, left=23, bottom=18)
 
 # Next, we plot the data on each subplot. We also remove the x-tick
 # labels for the first row and the y-tick labels for the second column

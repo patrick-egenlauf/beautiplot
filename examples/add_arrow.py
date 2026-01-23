@@ -38,13 +38,19 @@ ext = bp.extent(data_dict)
 # estimate the margins, but you can adjust them later if needed. The
 # figure will be trimmed to the axes, and tick labels or axis labels
 # won't be visible unless you specify margins.
+#
+# When you save the figure, `beautiplot` will suggest margin adjustments
+# if content is cut off. Note that changing margins might affect tick
+# label placement, potentially leading to new suggestions. Fixing tick
+# locations (as done below with `set_yticks`) helps stabilize the layout.
+#
 # We use the [`imshow`][beautiplot.plot.imshow] function to create an
 # image plot of the data. The `extent` parameter is used to set the
 # limits of the x and y axes, and the `cmap` parameter specifies the
 # colormap to use for the image. We also set the y-ticks to specific
 # values to demonstrate how to customize the tick labels.
 
-fig, ax = bp.newfig(left=36, bottom=30, right=43)
+fig, ax = bp.newfig(left=36, bottom=32, right=43)
 im = bp.imshow(ax, Z, extent=ext, cmap='viridis')
 ax.set_yticks([0.1, 0.3, 0.5, 0.7, 0.9])
 
