@@ -68,6 +68,8 @@ class _Config:
         self._width: float = 426.79135 * self._pt
         self._tex_preamble: str = PREAMBLE
         self._output_path: Path = Path('')
+        self._margin_threshold: float = 1.0
+        self._spacing_threshold: float = 6.0
         self._legend_setup: dict[str, Any] = {
             'columnspacing': 1.5,
             'handlelength': 1.5,
@@ -227,6 +229,30 @@ class _Config:
         self._output_path = Path(value)
         if not self._output_path.exists():
             self._output_path.mkdir(parents=True, exist_ok=True)
+
+    @property
+    def margin_threshold(self) -> float:
+        """Threshold for margin suggestions in bp.
+
+        The default value is 1.0.
+        """
+        return self._margin_threshold
+
+    @margin_threshold.setter
+    def margin_threshold(self, value: float) -> None:
+        self._margin_threshold = value
+
+    @property
+    def spacing_threshold(self) -> float:
+        """Threshold for spacing suggestions in bp.
+
+        The default value is 6.0.
+        """
+        return self._spacing_threshold
+
+    @spacing_threshold.setter
+    def spacing_threshold(self, value: float) -> None:
+        self._spacing_threshold = value
 
     @property
     def tex_preamble(self) -> str:
