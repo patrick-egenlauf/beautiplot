@@ -40,7 +40,16 @@ import beautiplot.plot as bp
 import numpy as np
 ```
 
-Next, we generate some data — a damped oscillation in this case.
+Before creating a figure, you should configure the plot width to match your document's text width. This ensures that font sizes and line widths are consistent with your document. You can find the text width of your LaTeX document by adding `\the\textwidth` to it.
+
+``` { .python .copy }
+from beautiplot import config
+
+# Set the width to the text width of your document in pt
+config.width = 426.79135
+```
+
+Next, we generate some data -- a damped oscillation in this case.
 
 ``` { .python .copy }
 t = np.linspace(0, 10, 1000)

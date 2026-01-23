@@ -41,10 +41,10 @@ class _Config:
     import, so you can change them at any time before creating a
     plot.
 
-    Warning:
-        You should never import and instantiate the `_Config` class
-        directly, but always use the `config` object provided by the
-        `beautiplot` module.
+    Note:
+        This class is not intended to be instantiated directly.
+        Please use the global instance `beautiplot.config` to modify
+        settings.
 
     Example:
         To change the width of the plot use:
@@ -414,6 +414,8 @@ class _Config:
         self._width = 426.79135 * self._pt
         self._tex_preamble = PREAMBLE
         self._output_path = Path('')
+        self._margin_threshold = 1.0
+        self._spacing_threshold = 6.0
         self._legend_setup = {
             'columnspacing': 1.5,
             'handlelength': 1.5,

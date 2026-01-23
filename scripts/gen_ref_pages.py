@@ -33,6 +33,10 @@ for path in sorted(src.rglob('*.py')):
     elif parts[-1] == '__main__':
         continue
 
+    nav_parts = list(parts)
+    if nav_parts[-1] == '_config':
+        nav_parts[-1] = 'Configuration'
+
     try:
         spec = importlib.util.spec_from_file_location(module_name, path)
         if spec is None or spec.loader is None:
@@ -43,11 +47,18 @@ for path in sorted(src.rglob('*.py')):
         print(f'Skipping {module_name}: import failed with {e}')
         continue
 
-    nav[parts] = doc_path.as_posix()
+    nav[tuple(nav_parts)] = doc_path.as_posix()
 
     with mkdocs_gen_files.open(full_doc_path, 'w') as fd:
         ident = '.'.join(parts)
-        fd.write(f'# ::: {ident}\n    options:\n      members: no')
+        if parts[-1] == '_config':
+            title = 'Configuration'
+            fd.write(f'# {title}\n')
+            fd.write(
+                f'::: {ident}\n    options:\n      members: no\n      show_root_heading: false'
+            )
+        else:
+            fd.write(f'# ::: {ident}\n    options:\n      members: no')
 
     doc_dir = Path('reference', *parts)
 
@@ -60,15 +71,30 @@ for path in sorted(src.rglob('*.py')):
             identifier = f'{module_name}.{name}'
             local_members.append((name, identifier))
 
-            # Create a page for each function/class
-            obj_doc_path = doc_dir / f'{name}.md'
+            # Create a page for each function/class except for private
+            # ones except _Config
+            if name.startswith('_') and name != '_Config':
+                continue
+            obj_doc_path = (
+                doc_dir / 'config.md' if name == '_Config' else doc_dir / f'{name}.md'
+            )
             with mkdocs_gen_files.open(obj_doc_path, 'w') as fd:
-                fd.write(f'# `{identifier}`\n\n')
-                fd.write(f'::: {identifier}\n')
+                if name == '_Config':
+                    display_name = 'Configuration Object'
+                    fd.write(f'# {display_name}\n\n')
+                    fd.write(
+                        f'::: {identifier}\n    options:\n      show_root_heading: false\n'
+                    )
+                else:
+                    fd.write(f'# `{identifier}`\n\n')
+                    fd.write(f'::: {identifier}\n')
             mkdocs_gen_files.set_edit_path(obj_doc_path, path.relative_to(root))
 
             # Add function/class to nav
-            nav[(*parts, name)] = obj_doc_path.relative_to('reference').as_posix()
+            nav_name = 'Configuration Object' if name == '_Config' else name
+            nav[(*nav_parts, nav_name)] = obj_doc_path.relative_to(
+                'reference'
+            ).as_posix()
 
 with mkdocs_gen_files.open('reference/SUMMARY.md', 'w') as nav_file:
     nav_file.writelines(nav.build_literate_nav())

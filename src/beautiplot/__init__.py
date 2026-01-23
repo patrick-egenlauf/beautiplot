@@ -2,7 +2,7 @@
 
 ## Modules
 
-- [`config`][beautiplot._config._Config]: Contains configuration
+- [`config`](_config/config.md): Contains configuration
     settings for beautiplot.
 - [`plot`][beautiplot.plot]: Contains functions for creating beautiful
     plots.
