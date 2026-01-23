@@ -78,6 +78,11 @@ class _Config:
         }
         self._init_matplotlib()
 
+    def __new__(cls) -> '_Config':
+        if not hasattr(cls, 'instance'):
+            cls.instance = super().__new__(cls)
+        return cls.instance
+
     @property
     def pt(self) -> float:
         """Point size in inches.
