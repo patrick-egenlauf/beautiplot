@@ -4,11 +4,12 @@ version = "1.1.0"
 description = "This package provides a set of functions to create beautiful plots with Matplotlib."
 authors = [{ name = "Patrick Egenlauf", email = "patrick.egenlauf@simtech.uni-stuttgart.de" }]
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.10,<4.0"
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
