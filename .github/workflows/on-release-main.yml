@@ -3,7 +3,12 @@ name: release-main
 on:
   release:
     types: [published]
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (branch, tag, or SHA) to publish from"
+        default: "main"
+        required: true
 
 jobs:
 
