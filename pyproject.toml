@@ -16,8 +16,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "matplotlib>=3.10.5",
-    "numpy>=2.1.2",
+    "matplotlib>=3.10.0",
+    "numpy>=1.26.4",
 ]
 
 [project.urls]
