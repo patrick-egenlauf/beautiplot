@@ -262,6 +262,7 @@ def _find_overlapping_rows(
     pos_grid: dict,
 ) -> set[int]:
     """Find rows that overlap with the colorbar."""
+
     def _interval_overlap(a0: float, a1: float, b0: float, b1: float) -> float:
         return max(0.0, min(a1, b1) - max(a0, b0))
 
@@ -271,7 +272,10 @@ def _find_overlapping_rows(
             cell_bbox = pos_grid.get(cell)
             if cell_bbox is None:
                 continue
-            if _interval_overlap(ax_bbox.y0, ax_bbox.y1, cell_bbox.y0, cell_bbox.y1) > 0:
+            if (
+                _interval_overlap(ax_bbox.y0, ax_bbox.y1, cell_bbox.y0, cell_bbox.y1)
+                > 0
+            ):
                 overlapping_rows.add(row)
                 break
     return overlapping_rows if overlapping_rows else set(row_cells)
@@ -326,6 +330,7 @@ def _find_overlapping_cols(
     pos_grid: dict,
 ) -> set[int]:
     """Find columns that overlap with the colorbar."""
+
     def _interval_overlap(a0: float, a1: float, b0: float, b1: float) -> float:
         return max(0.0, min(a1, b1) - max(a0, b0))
 
@@ -335,7 +340,10 @@ def _find_overlapping_cols(
             cell_bbox = pos_grid.get(cell)
             if cell_bbox is None:
                 continue
-            if _interval_overlap(ax_bbox.x0, ax_bbox.x1, cell_bbox.x0, cell_bbox.x1) > 0:
+            if (
+                _interval_overlap(ax_bbox.x0, ax_bbox.x1, cell_bbox.x0, cell_bbox.x1)
+                > 0
+            ):
                 overlapping_cols.add(col)
                 break
     return overlapping_cols if overlapping_cols else set(col_cells)
@@ -396,7 +404,7 @@ def _assign_floating_axes(
     """
     row_cells: dict[int, list[tuple[int, int]]] = {}
     col_cells: dict[int, list[tuple[int, int]]] = {}
-    for (row, col) in grid:
+    for row, col in grid:
         row_cells.setdefault(row, []).append((row, col))
         col_cells.setdefault(col, []).append((row, col))
 
@@ -404,8 +412,7 @@ def _assign_floating_axes(
     for ax in floating_axes:
         ax_bbox = ax.get_position()
         is_colorbar_axis = (
-            ax.get_label() == '<colorbar>'
-            or getattr(ax, '_colorbar', None) is not None
+            ax.get_label() == '<colorbar>' or getattr(ax, '_colorbar', None) is not None
         )
 
         if not is_colorbar_axis:
@@ -417,12 +424,12 @@ def _assign_floating_axes(
         if height >= width:
             if _assign_vertical_colorbar(
                 ax, ax_bbox, row_cells, col_cells, pos_grid, grid, assigned_axes
-                ):
+            ):
                 continue
         else:
             if _assign_horizontal_colorbar(
                 ax, ax_bbox, row_cells, col_cells, pos_grid, grid, assigned_axes
-                ):
+            ):
                 continue
 
         _assign_nearest_cell(ax, ax_bbox, pos_grid, assigned_axes)
@@ -454,7 +461,9 @@ def _suggest_spacing(fig: mfigure.Figure, renderer: Any, inch_to_bp: float) -> N
     primary_axes = [
         ax
         for ax in fig.axes
-        if ax.get_visible() and ax.get_subplotspec() is not None and ax.get_label() != '<colorbar>'
+        if ax.get_visible()
+        and ax.get_subplotspec() is not None
+        and ax.get_label() != '<colorbar>'
     ]
     if len(primary_axes) <= 1:
         return
@@ -464,16 +473,11 @@ def _suggest_spacing(fig: mfigure.Figure, renderer: Any, inch_to_bp: float) -> N
     if not grid:
         return
 
-    pos_grid = {
-        cell: _get_axes_pos_bbox(cell_axes)
-        for cell, cell_axes in grid.items()
-    }
+    pos_grid = {cell: _get_axes_pos_bbox(cell_axes) for cell, cell_axes in grid.items()}
     pos_grid = {cell: bbox for cell, bbox in pos_grid.items() if bbox is not None}
 
     floating_axes = [
-        ax
-        for ax in fig.axes
-        if ax.get_visible() and ax not in primary_axes
+        ax for ax in fig.axes if ax.get_visible() and ax not in primary_axes
     ]
 
     assigned_axes = _assign_floating_axes(floating_axes, grid, pos_grid)
