@@ -1005,19 +1005,21 @@ def cbar_minmax_labels(
 
 
 def legend(
-    ax: matplotlib.axes.Axes, *args: Any, **kwargs: Any
+    fig_or_ax: matplotlib.axes.Axes | matplotlib.figure.Figure,
+    *args: Any,
+    **kwargs: Any,
 ) -> matplotlib.legend.Legend:
     """Create a legend with some default options.
 
     Args:
-        ax: The axes to add the legend to.
+        fig_or_ax: The figure or axes to add the legend to.
         *args: Additional arguments to pass to `ax.legend`.
         **kwargs: Additional keyword arguments to pass to `ax.legend`.
 
     Returns:
         The legend.
     """
-    return ax.legend(*args, **(config.legend_setup | kwargs))
+    return fig_or_ax.legend(*args, **(config.legend_setup | kwargs))
 
 
 def text(
